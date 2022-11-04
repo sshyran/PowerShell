@@ -15,6 +15,7 @@ jobs:
     - template: release-SetReleaseTagAndContainerName.yml
 
     - task: DownloadPipelineArtifact@2
+      retryCountOnTaskFailure: 2
       inputs:
         source: specific
         project: PowerShellCore
@@ -46,6 +47,7 @@ jobs:
         Write-Host "sending " + $vstsCommandString
         Write-Host "##$vstsCommandString"
       displayName: Install makeappx tool
+      retryCountOnTaskFailure: 1
 
     - pwsh: |
         $sourceDir = '$(Pipeline.Workspace)\releasePipeline\msix'
@@ -64,11 +66,13 @@ jobs:
         Write-Host "sending " + $vstsCommandString
         Write-Host "##$vstsCommandString"
       displayName: Create MsixBundle
+      retryCountOnTaskFailure: 1
 
     - pwsh: |
         Import-module '$(BUILD.SOURCESDIRECTORY)/build.psm1'
         Install-AzCopy
       displayName: Install AzCopy
+      retryCountOnTaskFailure: 2
 
     - pwsh: |
         ## We use AzCopy v8.1 in our release pipeline, see the documentation at:
